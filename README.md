@@ -46,7 +46,7 @@ pytest>=7.4
 1) Clona el repo y entra al proyecto:
 ```bash
 git clone <TU_REPO.git>
-cd eartrainer_feedback
+cd HowlTrainer
 ```
 
 2) Crea y activa el entorno (ejemplo macOS, Python 3.12.9 oficial):
