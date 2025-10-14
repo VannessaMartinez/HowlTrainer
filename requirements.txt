@@ -1,0 +1,25 @@
+# --- Núcleo numérico y análisis de datos ---
+numpy>=1.26.0
+pandas>=2.1
+scipy>=1.12.0
+
+# --- Audio ---
+sounddevice>=0.4.6
+
+# --- Aprendizaje automático (KMeans / DBSCAN) ---
+scikit-learn>=1.5.0
+
+# (Opcional) Pruebas
+pytest>=7.4
+
+
+# --- Interfaz gráfica (incluida en Python) ---
+# tkinter viene preinstalado en la mayoría de distribuciones de Python
+# no se instala por pip, pero asegúrate de tener python-tk si usas Linux
+
+# --- Opcional (para futuras expansiones) ---
+# matplotlib>=3.9.0   # gráficos o espectrogramas
+# fuzzywuzzy>=0.18.0  # coincidencias difusas para nombres de bandas o módulos
+
+
+
