@@ -202,4 +202,4 @@ pytest -q
 
 ## 📄 Licencia
 
-MIT (o la que prefieras).
+MIT.
