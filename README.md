@@ -30,13 +30,12 @@ Incluye práctica guiada, registro de intentos y una página de **Stats** con an
 
 ### Dependencias (pip)
 ```txt
-numpy>=1.26
+numpy>=1.26.0
 pandas>=2.1
-scikit-learn>=1.5
+scipy>=1.12.0
 sounddevice>=0.4.6
+scikit-learn>=1.5.0
 pytest>=7.4
-# Opcional (si usas filtros/ruidos avanzados en synth):
-# scipy>=1.11
 ```
 
 ---
@@ -73,8 +72,8 @@ python main.py
 
 6) (Opcional) Menú por consola y stats en CLI:
 ```bash
-python run_menu_cli.py
-python run_stats_cli.py
+python run_tests_modular/run_menu_cli.py
+python run_tests_modular/run_stats_cli.py
 ```
 
 ---
@@ -111,7 +110,7 @@ python run_stats_cli.py
 ## 🏗️ Estructura del proyecto
 
 ```
-howl-trainer/
+HowlTrainer/
 ├─ ai/
 │  ├─ policy.py              # Selección de próxima banda (cooldown + exploración)
 │  └─ rules.py               # Reglas simbólicas de feedback pedagógico
@@ -126,17 +125,27 @@ howl-trainer/
 │  │  ├─ tones_page.py       # Pestaña de práctica
 │  │  ├─ stats_page.py       # Pestaña de estadísticas
 │  │  └─ about_page.py       # Pestaña de ayuda
-│  └─ dialogs/ (opcional)    # Diálogos modales si los usas
+│  └─ dialogs/
+│     └─ about.py            # Diálogo modal de ayuda
 ├─ assets/
 │  └─ howl_logo.png          # Logo de la app (PNG, 256–512 px recomendado)
 ├─ data/
+│  ├─ bands.csv              # Bandas de 1/3 de octava
 │  └─ session_log.csv        # Registro (se genera al practicar)
 ├─ tests/
-│  └─ test_bands.py
-├─ run_menu_cli.py
-├─ run_stats_cli.py
+│  ├─ test_bands.py
+│  ├─ test_rules.py
+│  └─ test_synth.py
+├─ run_tests_modular/
+│  ├─ run_audio_test.py
+│  ├─ run_kmeans_demo.py
+│  ├─ run_menu_cli.py
+│  ├─ run_practice_cli.py
+│  ├─ run_stats_cli.py
+│  └─ run_tests.py
 ├─ data_logger.py
 ├─ config.py
+├─ check_env.py
 ├─ requirements.txt
 └─ main.py
 ```
