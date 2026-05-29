@@ -33,6 +33,10 @@ def freq_to_descriptor(freq_hz: float) -> str:
     Devuelve un texto corto y pedagógico que describe la sensación de la frecuencia.
     No pretende ser científico al 100%, sino útil para entrenar el oído.
     """
+    if not isinstance(freq_hz, (int, float)):
+        raise TypeError(f"freq_hz debe ser numérico, recibido: {type(freq_hz).__name__}")
+    if freq_hz <= 0:
+        raise ValueError(f"freq_hz debe ser positivo, recibido: {freq_hz}")
     f = float(freq_hz)
     if f < 120:
         return "subgraves / muy profundo"
@@ -61,6 +65,10 @@ def notch_suggestion(freq_hz: float) -> Dict[str, float]:
       - Q ≈ 8: lo bastante estrecho para no quitar demasiado del programa.
       - Ganancia ≈ –9 dB como punto de partida (ajustable en uso real).
     """
+    if not isinstance(freq_hz, (int, float)):
+        raise TypeError(f"freq_hz debe ser numérico, recibido: {type(freq_hz).__name__}")
+    if freq_hz <= 0:
+        raise ValueError(f"freq_hz debe ser positivo, recibido: {freq_hz}")
     band = float(nearest(freq_hz))
     return {"freq": band, "Q": 8.0, "gain_db": -9.0}
 
@@ -97,6 +105,11 @@ def feedback_text(true_freq_hz: float, user_freq_hz: float) -> str:
         - Si está a 1 banda → “Casi” + orientación (subir/bajar) + tip de escucha.
         - Si está más lejos → “No” + distancia, dirección y tip de escucha.
     """
+    for name, val in (("true_freq_hz", true_freq_hz), ("user_freq_hz", user_freq_hz)):
+        if not isinstance(val, (int, float)):
+            raise TypeError(f"{name} debe ser numérico, recibido: {type(val).__name__}")
+        if val <= 0:
+            raise ValueError(f"{name} debe ser positivo, recibido: {val}")
     # Convertimos a bandas oficiales para "hablar el mismo idioma" en todo el sistema.
     b_true = nearest(true_freq_hz)
     b_user = nearest(user_freq_hz)

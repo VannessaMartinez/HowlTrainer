@@ -37,6 +37,12 @@ def nearest(freq_hz: float) -> int:
     Busca dentro de la lista BANDS la frecuencia más parecida a 'freq_hz'.
     Ejemplo: nearest(1180) -> 1250
     """
+    if not BANDS:
+        raise RuntimeError("La lista BANDS está vacía; revisa config.py / data/bands.csv")
+    if not isinstance(freq_hz, (int, float)):
+        raise TypeError(f"freq_hz debe ser numérico, recibido: {type(freq_hz).__name__}")
+    if freq_hz <= 0:
+        raise ValueError(f"freq_hz debe ser positivo, recibido: {freq_hz}")
     return min(BANDS, key=lambda b: abs(b - freq_hz))
 
 
@@ -66,6 +72,8 @@ def neighbors(band_hz: int, k: int = 1) -> List[int]:
     Por ejemplo, con k=1 devuelve una banda antes y una después.
     Ejemplo: neighbors(1000, 1) -> [800, 1000, 1250]
     """
+    if not isinstance(k, int) or k < 0:
+        raise ValueError(f"k debe ser un entero no negativo, recibido: {k!r}")
     i = index_of(band_hz)
     lo = max(0, i - k)  # evita números negativos
     hi = min(len(BANDS) - 1, i + k)  # evita salir del final de la lista
@@ -79,6 +87,10 @@ def region_of(freq_hz: float) -> str:
     - 500–2000 Hz → "medios" (voz, instrumentos)
     - >2000 Hz → "agudos" (brillo, silbido)
     """
+    if not isinstance(freq_hz, (int, float)):
+        raise TypeError(f"freq_hz debe ser numérico, recibido: {type(freq_hz).__name__}")
+    if freq_hz <= 0:
+        raise ValueError(f"freq_hz debe ser positivo, recibido: {freq_hz}")
     if freq_hz < 500:
         return "graves"
     if freq_hz < 2000:

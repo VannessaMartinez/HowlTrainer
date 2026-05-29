@@ -21,6 +21,16 @@ def ensure_csv():
             writer.writerow(CSV_HEADERS)
 
 def log_attempt(module: str, band_true: int, band_user: int, correct: int, rt_ms: int) -> None:
+    if not isinstance(module, str) or not module.strip():
+        raise ValueError(f"module debe ser un string no vacío, recibido: {module!r}")
+    if not isinstance(band_true, int) or band_true <= 0:
+        raise ValueError(f"band_true debe ser un entero positivo, recibido: {band_true!r}")
+    if not isinstance(band_user, int) or band_user <= 0:
+        raise ValueError(f"band_user debe ser un entero positivo, recibido: {band_user!r}")
+    if correct not in (0, 1):
+        raise ValueError(f"correct debe ser 0 o 1, recibido: {correct!r}")
+    if not isinstance(rt_ms, int) or rt_ms < 0:
+        raise ValueError(f"rt_ms debe ser un entero no negativo, recibido: {rt_ms!r}")
     ensure_csv()
     ts = datetime.now().isoformat(timespec="seconds")
     with CSV_PATH.open("a", newline="", encoding="utf-8") as f:
@@ -38,6 +48,9 @@ def reset_session_log(mode: Literal["keep_file", "delete_file"] = "keep_file") -
         reset_session_log("keep_file")   # limpia contenido pero deja el archivo
         reset_session_log("delete_file") # borra el archivo
     """
+    valid_modes = ("keep_file", "delete_file")
+    if mode not in valid_modes:
+        raise ValueError(f"mode debe ser uno de {valid_modes}, recibido: {mode!r}")
     ensure_csv()
     if mode == "delete_file":
         try:

@@ -37,6 +37,13 @@ def update(true_band_hz: int, correct: int) -> None:
     Actualiza estadísticas básicas de desempeño.
     correct: 1 acierto, 0 error
     """
+    if true_band_hz not in BANDS:
+        raise ValueError(
+            f"true_band_hz={true_band_hz} no está en BANDS. "
+            f"Valores válidos: {BANDS}"
+        )
+    if correct not in (0, 1):
+        raise ValueError(f"correct debe ser 0 o 1, recibido: {correct!r}")
     idx = BANDS.index(true_band_hz)
     ok, bad = _stats.get(idx, (0, 0))
     if correct:
@@ -81,6 +88,14 @@ def next_band(last_idx: int | None) -> int:
     - En explotación, elegimos entre candidatos el de mayor "debilidad".
     - Añadimos el elegido al historial (cooldown de las últimas N bandas).
     """
+    if not BANDS:
+        raise RuntimeError("BANDS está vacía; no se puede elegir banda objetivo")
+    if last_idx is not None:
+        if not isinstance(last_idx, int) or last_idx < 0 or last_idx >= len(BANDS):
+            raise ValueError(
+                f"last_idx debe ser None o un índice válido (0..{len(BANDS)-1}), "
+                f"recibido: {last_idx!r}"
+            )
     # 1) Construir candidatos excluyendo recentísimos
     candidates = _candidates_excluding_recent()
 

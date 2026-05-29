@@ -54,7 +54,11 @@ def load_session_log(csv_path: str = "data/session_log.csv") -> pd.DataFrame:
 
     Si no existe, levanta FileNotFoundError.
     """
+    if not csv_path or not isinstance(csv_path, str):
+        raise ValueError(f"csv_path debe ser un string no vacío, recibido: {csv_path!r}")
     df = pd.read_csv(csv_path)
+    if df.empty:
+        raise ValueError(f"El CSV está vacío o solo tiene cabecera: {csv_path}")
     return df
 
 
@@ -112,6 +116,15 @@ def pick_k_by_silhouette(X: np.ndarray, k_range: Tuple[int,int] = (2,4)) -> int:
     Elige k en un rango pequeño (2..4 por defecto) maximizando silhouette score.
     Requiere al menos k clusters distintos (si X es muy chico, cae en k=2).
     """
+    if not isinstance(X, np.ndarray) or X.ndim != 2:
+        raise ValueError("X debe ser un ndarray 2D")
+    if X.shape[0] < k_range[0]:
+        raise ValueError(
+            f"Se necesitan al menos {k_range[0]} muestras para clusterizar, "
+            f"recibidas: {X.shape[0]}"
+        )
+    if k_range[0] < 2:
+        raise ValueError(f"k_range mínimo debe ser >= 2, recibido: {k_range}")
     Xs = StandardScaler().fit_transform(X)
     best_k, best_score = None, -1.0
     for k in range(k_range[0], k_range[1]+1):
@@ -132,6 +145,14 @@ def run_kmeans(X: np.ndarray, k: int) -> Tuple[np.ndarray, KMeans, StandardScale
       km: modelo KMeans ajustado
       scaler: StandardScaler usado (por si quieres reutilizarlo)
     """
+    if not isinstance(X, np.ndarray) or X.ndim != 2:
+        raise ValueError("X debe ser un ndarray 2D")
+    if not isinstance(k, int) or k < 2:
+        raise ValueError(f"k debe ser un entero >= 2, recibido: {k!r}")
+    if X.shape[0] < k:
+        raise ValueError(
+            f"Se necesitan al menos k={k} muestras, recibidas: {X.shape[0]}"
+        )
     scaler = StandardScaler().fit(X)
     Xs = scaler.transform(X)
     km = KMeans(n_clusters=k, n_init="auto", random_state=42)

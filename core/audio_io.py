@@ -30,7 +30,12 @@ def normalize(sig: np.ndarray, eps: float = 1e-6) -> np.ndarray:
     Si la señal ya está normalizada, no cambia nada.
     """
     if not isinstance(sig, np.ndarray):
-        sig = np.asarray(sig, dtype=np.float32)
+        try:
+            sig = np.asarray(sig, dtype=np.float32)
+        except (ValueError, TypeError) as e:
+            raise TypeError(f"sig no se puede convertir a ndarray: {e}") from e
+    if sig.size == 0:
+        return sig.astype(np.float32)
     peak = np.max(np.abs(sig)) + eps
     out = sig / peak
     return out.astype(np.float32)
@@ -43,6 +48,10 @@ def apply_gain(sig: np.ndarray, gain_db: float) -> np.ndarray:
     gain_db = -6 -> reduce ~a la mitad
     gain_db = +6 -> duplica (cuidado con clipping)
     """
+    if not isinstance(sig, np.ndarray):
+        raise TypeError(f"sig debe ser np.ndarray, recibido: {type(sig).__name__}")
+    if not isinstance(gain_db, (int, float)):
+        raise TypeError(f"gain_db debe ser numérico, recibido: {type(gain_db).__name__}")
     g = 10 ** (gain_db / 20.0)
     out = sig * g
     # re-normaliza si nos pasamos del rango
@@ -87,6 +96,12 @@ def play_blocking(sig: np.ndarray, fs: int = FS, gain_db: float = -6.0) -> None:
     - baja volumen por defecto (-6 dB)
     - aplica fade-in/out 10 ms
     """
+    if not isinstance(sig, np.ndarray):
+        raise TypeError(f"sig debe ser np.ndarray, recibido: {type(sig).__name__}")
+    if sig.size == 0:
+        return
+    if not isinstance(fs, int) or fs <= 0:
+        raise ValueError(f"fs debe ser un entero positivo, recibido: {fs!r}")
     try:
         # Pipeline de preparación de señal
         y = normalize(sig)
@@ -114,6 +129,12 @@ def play_async(sig: np.ndarray, fs: int = FS, gain_db: float = -6.0) -> sd.Outpu
         - Un objeto sd.OutputStream que puedes .stop() más tarde, o
         - None si hubo error.
     """
+    if not isinstance(sig, np.ndarray):
+        raise TypeError(f"sig debe ser np.ndarray, recibido: {type(sig).__name__}")
+    if sig.size == 0:
+        return None
+    if not isinstance(fs, int) or fs <= 0:
+        raise ValueError(f"fs debe ser un entero positivo, recibido: {fs!r}")
     try:
         y = normalize(sig)
         y = apply_gain(y, gain_db)

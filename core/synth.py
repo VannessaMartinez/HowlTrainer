@@ -57,6 +57,14 @@ def make_tone(freq_hz: float, dur: float = DUR_SEC, fs: int = FS, fade_ms: float
     Seno puro a freq_hz con fades. Devuelve [-1, 1] float32.
     (El volumen final lo puedes manejar en audio_io con gain_db).
     """
+    if not isinstance(freq_hz, (int, float)) or freq_hz <= 0:
+        raise ValueError(f"freq_hz debe ser un número positivo, recibido: {freq_hz!r}")
+    if not isinstance(dur, (int, float)) or dur <= 0:
+        raise ValueError(f"dur debe ser un número positivo, recibido: {dur!r}")
+    if not isinstance(fs, int) or fs <= 0:
+        raise ValueError(f"fs debe ser un entero positivo, recibido: {fs!r}")
+    if freq_hz > fs / 2:
+        raise ValueError(f"freq_hz ({freq_hz}) supera Nyquist ({fs / 2} Hz) para fs={fs}")
     t = np.arange(int(dur * fs), dtype=np.float64) / fs
     x = np.sin(2.0 * np.pi * float(freq_hz) * t)  # seno limpio
     x = _apply_fades(x, fs, fade_ms=fade_ms)
@@ -68,6 +76,10 @@ def make_pink_noise(dur: float = DUR_SEC, fs: int = FS, fade_ms: float = 10.0) -
     Ruido rosa (aprox) filtrando ruido blanco con un pasa-bajos suave.
     Normalizamos pico y aplicamos fades para evitar clicks.
     """
+    if not isinstance(dur, (int, float)) or dur <= 0:
+        raise ValueError(f"dur debe ser un número positivo, recibido: {dur!r}")
+    if not isinstance(fs, int) or fs <= 0:
+        raise ValueError(f"fs debe ser un entero positivo, recibido: {fs!r}")
     n = int(fs * dur)
     rng = np.random.default_rng()
     white = rng.standard_normal(n).astype(np.float64)
@@ -128,6 +140,15 @@ def make_feedback(
     Aquí dejamos señales normalizadas a [-1, 1] con fades.
     """
     mode = (mode or "pure").lower()
+    valid_modes = ("pure", "narrowband", "mixed")
+    if mode not in valid_modes:
+        raise ValueError(f"mode debe ser uno de {valid_modes}, recibido: {mode!r}")
+    if not isinstance(freq_hz, (int, float)) or freq_hz <= 0:
+        raise ValueError(f"freq_hz debe ser un número positivo, recibido: {freq_hz!r}")
+    if not isinstance(mix, (int, float)) or not (0.0 <= mix <= 1.0):
+        raise ValueError(f"mix debe estar entre 0.0 y 1.0, recibido: {mix!r}")
+    if not isinstance(q, (int, float)) or q <= 0:
+        raise ValueError(f"q debe ser un número positivo, recibido: {q!r}")
 
     if mode == "pure":
         return make_tone(freq_hz, dur=dur, fs=fs, fade_ms=fade_ms)
